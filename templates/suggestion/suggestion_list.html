@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Fikrlar va Takliflar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-list"></i> Mening Fikr va Takliflarim</h2>
+            <a href="{% url 'suggestion_create' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Yangi Qo'shish
+            </a>
+        </div>
+
+        <!-- Qidiruv va Filtrlash -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-8">
+                        {{ form.query }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.status }}
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Fikrlar ro'yxati -->
+        {% if suggestions %}
+            <div class="row">
+                {% for suggestion in suggestions %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ suggestion.title }}</h6>
+                            <span class="badge
+                                {% if suggestion.status == 'pending' %}bg-warning
+                                {% elif suggestion.status == 'approved' %}bg-success
+                                {% else %}bg-danger{% endif %}">
+                                {{ suggestion.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ suggestion.get_short_content }}</p>
+                            <small class="text-muted">
+                                <i class="far fa-clock"></i> {{ suggestion.created_at|date:"d.m.Y H:i" }}
+                            </small>
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn-group w-100" role="group">
+                                <a href="{% url 'suggestion_detail' suggestion.pk %}"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Ko'rish
+                                </a>
+                                <a href="{% url 'suggestion_update' suggestion.pk %}"
+                                   class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-edit"></i> Tahrirlash
+                                </a>
+                                <a href="{% url 'suggestion_delete' suggestion.pk %}"
+                                   class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i> O'chirish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Sahifalash -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Sahifalash">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                Birinchi
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                Oldingi
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                Keyingi
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                Oxirgi
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Hozircha fikr va takliflar yo'q</h4>
+                <p class="text-muted">Birinchi fikr yoki taklifingizni qo'shing!</p>
+                <a href="{% url 'suggestion_create' %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Yangi Qo'shish
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
