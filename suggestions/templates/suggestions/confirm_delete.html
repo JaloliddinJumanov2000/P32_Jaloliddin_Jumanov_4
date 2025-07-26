@@ -1,0 +1,10 @@
+{% extends "suggestions/base.html" %}
+{% block content %}
+<h2>O‘chirishni tasdiqlang</h2>
+<p>{{ suggestion.title }} ni o‘chirmoqchimisiz?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Ha, o‘chirish</button>
+    <a href="{% url 'suggestion_list' %}" class="btn btn-secondary">Bekor qilish</a>
+</form>
+{% endblock %}
